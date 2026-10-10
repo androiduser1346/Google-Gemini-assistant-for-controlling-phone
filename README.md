@@ -29,7 +29,7 @@ Open Termux and run:
 ```bash
 pkg update -y
 pkg install -y git python android-tools termux-api
-git clone https://github.com/YOUR_GITHUB_USERNAME/gemini-phone-assistant.git
+git clone https://github.com/androiduser1346/gemini-phone-assistant.git
 cd gemini-phone-assistant
 bash install.sh
 ```
