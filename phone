@@ -1,0 +1,42 @@
+#!/data/data/com.termux/files/usr/bin/bash
+ADB="$PREFIX/bin/adb"
+
+if ! "$ADB" get-state >/dev/null 2>&1; then
+    echo "ADB is not connected."
+    echo "Enable Android Wireless debugging and connect with adb."
+    exit 1
+fi
+
+case "$1" in
+  home) "$ADB" shell input keyevent 3 ;;
+  back) "$ADB" shell input keyevent 4 ;;
+  recents) "$ADB" shell input keyevent 187 ;;
+  settings) "$ADB" shell am start -a android.settings.SETTINGS ;;
+  display) "$ADB" shell am start -a android.settings.DISPLAY_SETTINGS ;;
+  chrome) "$ADB" shell monkey -p com.android.chrome 1 ;;
+  youtube) "$ADB" shell monkey -p com.google.android.youtube 1 ;;
+  youtube-music) "$ADB" shell monkey -p com.google.android.apps.youtube.music 1 ;;
+  wifi-on) "$ADB" shell svc wifi enable ;;
+  wifi-off) "$ADB" shell svc wifi disable ;;
+  volume-up) "$ADB" shell input keyevent 24 ;;
+  volume-down) "$ADB" shell input keyevent 25 ;;
+  mute) "$ADB" shell input keyevent 164 ;;
+  battery) "$ADB" shell dumpsys battery ;;
+  notifications) "$ADB" shell cmd statusbar expand-notifications ;;
+  quick-settings) "$ADB" shell cmd statusbar expand-settings ;;
+  youtube-search)
+    shift
+    QUERY="$(python -c 'import sys,urllib.parse; print(urllib.parse.quote_plus(" ".join(sys.argv[1:])))' "$@")"
+    "$ADB" shell am start -a android.intent.action.VIEW \
+      -d "https://www.youtube.com/results?search_query=$QUERY"
+    ;;
+  status)
+    "$ADB" devices
+    "$ADB" shell wm size
+    "$ADB" shell getprop ro.build.version.sdk
+    ;;
+  *)
+    echo "Actions: home back recents settings display chrome youtube youtube-music wifi-on wifi-off volume-up volume-down mute battery notifications quick-settings youtube-search status"
+    exit 2
+    ;;
+esac
