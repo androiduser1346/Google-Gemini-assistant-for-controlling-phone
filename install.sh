@@ -94,6 +94,24 @@ PY
     exit 1
 }
 
+echo
+echo "=== ADB Setup Wizard ==="
+pkg update -y && pkg install -y android-tools termux-api
+echo "Enable Developer options > Wireless debugging."
+printf "Set up wireless ADB now? [y/N]: "
+read -r yn
+if [ "$yn" = y ] || [ "$yn" = Y ]; then
+  printf "Pairing address (IP:PORT): "
+  read -r pair_addr
+  printf "Pairing code: "
+  read -r pair_code
+  adb pair "$pair_addr" "$pair_code" || echo "Pairing failed."
+  printf "Device address (IP:PORT): "
+  read -r device_addr
+  [ -z "$device_addr" ] || adb connect "$device_addr"
+fi
+adb devices
+echo
 umask 077
 printf 'export GEMINI_API_KEY=%q\nexport GEMINI_MODEL=%q\n' \
     "$GEMINI_API_KEY" "$MODEL" > "$ENVFILE"
